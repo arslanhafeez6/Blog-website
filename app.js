@@ -19,15 +19,18 @@ app.use(express.static("public"));
 let posts = [];
 
 app.get("/", function(req, res){
-  res.render("home",{homeStartingContentText: homeStartingContent, posts: posts});
+  res.render("home", {
+    startingContent: homeStartingContent,
+    posts: posts
+    });
 });
 
 app.get("/about", function(req, res){
-  res.render("about", {aboutContentText: aboutContent});
+  res.render("about", {aboutContent: aboutContent});
 });
 
 app.get("/contact", function(req, res){
-  res.render("contact", {contactContentText: contactContent});
+  res.render("contact", {contactContent: contactContent});
 });
 
 app.get("/compose", function(req, res){
@@ -35,34 +38,32 @@ app.get("/compose", function(req, res){
 });
 
 app.post("/compose", function(req, res){
-
   const post = {
-    postHeading: req.body.title,
-    tweetpost: req.body.tweet
+    title: req.body.postTitle,
+    content: req.body.postBody
   };
 
   posts.push(post);
+
   res.redirect("/");
+
 });
 
-app.get("/posts/:postTitle", function(req, res){
-  const postParam = _.kebabCase(_.lowerCase(req.params.postTitle));
+app.get("/posts/:postName", function(req, res){
+  const requestedTitle = _.lowerCase(req.params.postName);
 
   posts.forEach(function(post){
-    const titleSaved = _.kebabCase(_.lowerCase(post.postHeading));
+    const storedTitle = _.lowerCase(post.title);
 
-    if(postParam === titleSaved){
-        res.render("post", {postTitle: post.postHeading, postBody: post.tweetpost});
+    if (storedTitle === requestedTitle) {
+      res.render("post", {
+        title: post.title,
+        content: post.content
+      });
     }
-
   });
+
 });
-
-
-
-
-
-
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
